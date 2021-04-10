@@ -60,7 +60,6 @@ const TimeSlots = ({ navigation, route }) => {
                 renderItem={({ item }) => (
                     <SingleTimeSlot 
                         id={item._id} 
-                        timeRange={'user 1'} 
                         start={item.start}
                         end={item.end}
                         isBooked={item.isBooked}

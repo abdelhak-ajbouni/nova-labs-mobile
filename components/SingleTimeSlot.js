@@ -6,7 +6,6 @@ import {
     Text,
     ToastAndroid
 } from 'react-native';
-import moment from 'moment'
 import {
     useMutation
 } from 'react-query'
@@ -25,15 +24,12 @@ const SingleTimeSlot = ({ id, start, end, isBooked, requestedBy, sellerId }) => 
         );
       };
 
-    const startTime = moment(start).format("LT");
-    const endTime = moment(end).format("LT");
-
     return (
         <View style={styles.timeSlot}>
             <Text
                 style={styles.username}
             >
-                {startTime} - {endTime}
+                {start} - {end}
             </Text>
             {
 
