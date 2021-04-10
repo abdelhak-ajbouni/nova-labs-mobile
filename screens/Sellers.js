@@ -1,19 +1,64 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     StyleSheet,
     View,
     FlatList,
-    TextInput
+    TextInput,
+    ActivityIndicator,
+    ToastAndroid,
+    Text
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {
+    useQuery
+} from 'react-query'
 
 import SingleSeller from '../components/SingleSeller'
+import { getSellers } from '../libs/apis'
 
-const sellers = [{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' },{ _id: 'test' }, { _id: 'test' }]
+const Sellers = ({ navigation, route }) => {
+    const { currentUser } = route.params;
+    const { isFetching, error, refetch, data } = useQuery("sellers", () => getSellers(0, 100, search))
+    const [search, setSearch] = useState('')
 
-const Sellers = ({ navigation }) => {
-    const [search, setSearch] = useState(null)
+    const showToastWithGravity = () => {
+        ToastAndroid.showWithGravity(
+            "Something Went Wrong",
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM
+        );
+    };
 
-    console.log('search =========================', search)
+    useEffect(() => {
+        error && showToastWithGravity()
+    }, [error]);
+
+    const renderSellers = (sellersList) => {
+        if (sellersList.length < 1) {
+            return (
+                <View style={styles.noResult}>
+                    <Icon
+                        name="exclamation-circle"
+                        style={styles.noResultIcon}
+                    />
+                    <Text style={styles.noResultText}>
+                        No Sellers To Show
+
+                    </Text>
+                </View>
+            )
+        }
+        return (
+            <FlatList
+                data={sellersList}
+                keyExtractor={item => item._id}
+                renderItem={({ item }) => (
+                    <SingleSeller id={item._id} username={item.fullName} onClick={() => navigation.navigate('Time Slots', {sellerId: item._id, currentUser})} />
+                )}
+                inverted
+            />
+        )
+    }
 
     return (
         <View style={styles.view}>
@@ -21,13 +66,16 @@ const Sellers = ({ navigation }) => {
                 placeholder="Search Sellers"
                 style={styles.search}
                 onChangeText={setSearch}
+                onSubmitEditing={() => refetch(0, 8, search)}
             />
-            <FlatList
-                data={sellers}
-                renderItem={() => (
-                    <SingleSeller id={'test'} username={'user 1'} onClick={(id) => navigation.navigate('Time Slots', { name: id })} />
-                )}
-            />
+            {
+                isFetching ? (
+                    <ActivityIndicator size="small" color="#84a59d" />
+                ) : (
+                    renderSellers(data)
+                )
+
+            }
         </View>
     )
 }
@@ -35,7 +83,7 @@ const Sellers = ({ navigation }) => {
 const styles = StyleSheet.create({
     view: {
         backgroundColor: '#edf2f4',
-        flex:1
+        flex: 1
     },
     title: {
         fontSize: 18,
@@ -48,6 +96,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8f8f8',
         borderBottomWidth: 1,
         borderColor: '#eee',
+    },
+    noResult: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: 15
+    },
+    noResultText: {
+        color: '#ccc',
+        marginTop: 5
+    },
+    noResultIcon: {
+        color: '#ccc',
+        fontSize: 24
     }
 });
 

@@ -6,9 +6,16 @@ import {
     Text,
     ToastAndroid
 } from 'react-native';
+import moment from 'moment'
+import {
+    useMutation
+} from 'react-query'
+
+import { addRequestToTimeSlot } from '../libs/apis'
 
 
-const SingleTimeSlot = ({ id, username, isBooked = false, onClick }) => {
+const SingleTimeSlot = ({ id, start, end, isBooked, requestedBy, sellerId }) => {
+    const { mutate } = useMutation(newRequest => addRequestToTimeSlot(sellerId, id, newRequest))
 
     const showToastWithGravity = () => {
         ToastAndroid.showWithGravity(
@@ -18,27 +25,27 @@ const SingleTimeSlot = ({ id, username, isBooked = false, onClick }) => {
         );
       };
 
+    const startTime = moment(start).format("LT");
+    const endTime = moment(end).format("LT");
+
     return (
         <View style={styles.timeSlot}>
             <Text
                 style={styles.username}
-                onPress={() => onClick(id)}
             >
-                {username}
+                {startTime} - {endTime}
             </Text>
             {
 
                 isBooked ? (
-                        <TouchableOpacity
-                            onPress={() => { }}
-                        >
+                        <TouchableOpacity>
                             <Text style={styles.bookedText} onPress={() => {showToastWithGravity()}}>Booked</Text>
                         </TouchableOpacity>
                     )
                     : (
                         <TouchableOpacity
                             style={styles.btn}
-                            onPress={() => { }}
+                            onPress={() => mutate({ requestedBy })}
                         >
                             <Text style={styles.sendText}>Send Request</Text>
                         </TouchableOpacity>

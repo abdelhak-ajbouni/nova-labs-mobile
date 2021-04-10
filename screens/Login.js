@@ -19,7 +19,8 @@ const Login = ({ navigation }) => {
             />
             <TouchableOpacity
                 style={styles.btn}
-                onPress={() => { navigation.navigate('Sellers') }}
+                onPress={() => { navigation.navigate('Sellers', { currentUser: username }) }}
+                disabled={!username}
             >
                 <Text  style={styles.btnText}>Login</Text>
             </TouchableOpacity>
