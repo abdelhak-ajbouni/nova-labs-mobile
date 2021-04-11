@@ -55,7 +55,6 @@ const Sellers = ({ navigation, route }) => {
                 renderItem={({ item }) => (
                     <SingleSeller id={item._id} username={item.fullName} onClick={() => navigation.navigate('Time Slots', {sellerId: item._id, currentUser})} />
                 )}
-                inverted
             />
         )
     }

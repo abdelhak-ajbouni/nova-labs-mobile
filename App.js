@@ -1,4 +1,5 @@
 import React from 'react';
+import { LogBox } from 'react-native';
 import {
   QueryClient,
   QueryClientProvider,
@@ -10,6 +11,7 @@ import Login from './screens/Login'
 import Sellers from './screens/Sellers'
 import TimeSlots from './screens/TimeSlots';
 
+LogBox.ignoreAllLogs();//Ignore all log notifications
 const queryClient = new QueryClient()
 const Stack = createStackNavigator();
 
