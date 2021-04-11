@@ -65,7 +65,7 @@ const Sellers = ({ navigation, route }) => {
                 placeholder="Search Sellers"
                 style={styles.search}
                 onChangeText={setSearch}
-                onSubmitEditing={() => refetch(0, 8, search)}
+                onSubmitEditing={() => refetch(0, 100, search)}
             />
             {
                 isFetching ? (
