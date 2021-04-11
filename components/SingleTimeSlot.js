@@ -7,22 +7,36 @@ import {
     ToastAndroid
 } from 'react-native';
 import {
-    useMutation
+    useMutation,
+    useQuery
 } from 'react-query'
 
-import { addRequestToTimeSlot } from '../libs/apis'
+import { addRequestToTimeSlot, getRequests } from '../libs/apis'
 
 
 const SingleTimeSlot = ({ id, start, end, isBooked, requestedBy, sellerId }) => {
-    const { mutate } = useMutation(newRequest => addRequestToTimeSlot(sellerId, id, newRequest))
-
+    const { refetch, data } = useQuery(["requests", sellerId, id], () => getRequests(sellerId, id))
+    const { mutate } = useMutation(newRequest => addRequestToTimeSlot(sellerId, id, newRequest), {
+        onSuccess: () => {
+            refetch()
+        }
+    })
+    
     const showToastWithGravity = () => {
         ToastAndroid.showWithGravity(
-          "Time Slot Already Booked",
-          ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
+            "Time Slot Already Booked",
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM
         );
-      };
+    };
+
+    const isSent = (requestedBy, start, end) => {
+        if (!data) {
+            return false
+        }
+        const found = data.find(r => r.requestedBy === requestedBy)
+        return !!found
+    }
 
     return (
         <View style={styles.timeSlot}>
@@ -34,16 +48,17 @@ const SingleTimeSlot = ({ id, start, end, isBooked, requestedBy, sellerId }) => 
             {
 
                 isBooked ? (
-                        <TouchableOpacity>
-                            <Text style={styles.bookedText} onPress={() => {showToastWithGravity()}}>Booked</Text>
-                        </TouchableOpacity>
-                    )
+                    <TouchableOpacity>
+                        <Text style={styles.bookedText} onPress={() => { showToastWithGravity() }}>Booked</Text>
+                    </TouchableOpacity>
+                )
                     : (
                         <TouchableOpacity
-                            style={styles.btn}
+                            style={!isSent(requestedBy) && styles.btn}
+                            disabled={isSent(requestedBy)}
                             onPress={() => mutate({ requestedBy })}
                         >
-                            <Text style={styles.sendText}>Send Request</Text>
+                            <Text style={isSent(requestedBy) ? styles.bookedText : styles.sendText}>{isSent(requestedBy) ? 'Request Sent' : 'Send Request'}</Text>
                         </TouchableOpacity>
                     )
             }

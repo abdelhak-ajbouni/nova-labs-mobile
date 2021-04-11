@@ -22,8 +22,15 @@ const addRequestToTimeSlot = (sellerId, timeSlotsId, body) => {
   .catch(error => console.log(error));
 }
 
+const getRequests = (sellerId, timeslotId) => {
+  return fetch(`http://10.0.2.2:3200/api/sellers/${sellerId}/timeslots/${timeslotId}/requests`)
+  .then((response) => response.json())
+  .catch(error => console.log(error));
+}
+
 export {
   getSellers,
   getSellerById,
-  addRequestToTimeSlot
+  addRequestToTimeSlot,
+  getRequests
 }

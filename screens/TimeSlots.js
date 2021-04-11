@@ -18,7 +18,7 @@ import { getSellerById } from '../libs/apis'
 
 const width = Dimensions.get('window').width; 
 
-const TimeSlots = ({ navigation, route }) => {
+const TimeSlots = ({ route }) => {
     const { sellerId, currentUser } = route.params;
     const { isFetching, error, refetch, data } = useQuery(["sellers", sellerId, date], () => getSellerById(sellerId, date))
     const [date, setDate] = useState(new Date())
